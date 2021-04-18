@@ -1,0 +1,31 @@
+name: Deploy to IBM Cloud
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  schedule:
+    - cron: "0 23 * * 3"
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install Python
+      run: |
+        sudo apt update && \
+        sudo apt install python3 && \
+        sudo apt install python3-setuptools
+    - name: requirements
+      run: |
+        pip3 install -r requirements.txt
+    - name: Checkin
+      run: |
+        api_id='${{ secrets.API_ID }}'
+        api_hash='${{ secrets.API_HASH }}'
+        echo ${api_id}
+        echo ${api_hash}
+        python3 nmsl.py <<EOF
+        ${api_id}
+        ${api_hash}
+        EOF
